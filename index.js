@@ -11,17 +11,12 @@ app.use(cors())
 app.use(logger)
 
 app.use("/api/auth", require("./routes/auth.routes"))
-app.use("/api/account", require("./routes/account.routes"))
+app.use("/api/account", require("./routes/account.router"))
 
-app.use("*", (req, res) => {
-    res.status(404).json({ message: "Resource Not Found" })
+app.use((err, next, req, res) => {
+    console.log(err);
+    res.status(500).json({ message: "server error", error: err.message })
 })
-
-app.use((err,req, res,next) => {
-    console.log(err)
-    res.status(500).json({ message: "Server Error", error: err.message })
-})
-
 mongoose.connection.once("open", () => {
     console.log("MONGO CONNECTED")
     app.listen(process.env.PORT, console.log("SERVER RUNNING"))
